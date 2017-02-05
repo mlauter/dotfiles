@@ -303,6 +303,9 @@ you should place your code here."
 
   (use-package flycheck
     :init (global-flycheck-mode t))
+
+  (global-set-key [mouse-4] 'scroll-down-line)
+  (global-set-key [mouse-5] 'scroll-up-line)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

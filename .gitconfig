@@ -7,4 +7,4 @@
 	c-p = cherry-pick
 	rpull = pull --rebase
 [include]
-	path = ~/dotfile_local/.gitconfig_local
+	path = ~/dotfiles_local/.gitconfig_local
