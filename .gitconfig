@@ -1,5 +1,5 @@
 [core]
-	editor = emacsclient
+	editor = emacsclient -t -a=\"\"
 	pager = less -+F -+X
 [alias]
 	co = checkout
