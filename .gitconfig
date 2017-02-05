@@ -1,0 +1,8 @@
+[core]
+	editor = emacsclient
+	pager = less -+F -+X
+[alias]
+	co = checkout
+	st = status
+	c-p = cherry-pick
+	rpull = pull --rebase
