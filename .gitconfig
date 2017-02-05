@@ -6,3 +6,5 @@
 	st = status
 	c-p = cherry-pick
 	rpull = pull --rebase
+[include]
+	path = ~/dotfile_local/.gitconfig_local
