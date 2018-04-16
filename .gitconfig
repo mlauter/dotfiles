@@ -1,0 +1,6 @@
+[core]
+	editor = emacsclient -t -a=\"\"
+	pager = less -F -X
+	excludesfile = /home/mlauter/.gitignore_global
+[include]
+    path = ~/dotfiles_local/.gitconfig_local
