@@ -20,18 +20,18 @@
                                    ("MELPA"        . 0)))
 (package-initialize)
 
-;; This is only needed once, near the top of the file
-(eval-when-compile
-  ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
-  (require 'use-package))
-
 ;; Make emacs more responsive
 (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 800 1024))) t)
 
 ;; Start the emacs server once
 (require 'server)
 (unless (server-running-p) (server-start))
+
+;; This is only needed once, near the top of the file
+(eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
+  (require 'use-package))
 
 (use-package shackle
   :ensure t
@@ -177,7 +177,8 @@
 		       "a" 'avy-goto-word-or-subword-1
 		       "f" 'my-fzf
 		       "g" 'etsy-github-link
-		       "rb" 'revert-buffer))
+		       "tf" 'terraform-format-buffer
+                       "rb" 'revert-buffer))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)
@@ -242,6 +243,13 @@ point reaches the beginning or end of the buffer, stop there."
   (setq molokai-theme-kit t)
   :config
   (load-theme 'molokai t)
+  )
+
+(use-package monokai-theme
+  :ensure t
+  :load-path "themes"
+  :config
+  (load-theme 'monokai t)
   )
 
 (use-package color-theme-sanityinc-tomorrow
@@ -359,6 +367,12 @@ point reaches the beginning or end of the buffer, stop there."
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+;; terraform
+(use-package terraform-mode
+  :ensure t
+  :defer t
+  :hook terraform-format-on-save-mode)
+
 ;; autocompletion
 (use-package auto-complete
   :ensure t
@@ -387,6 +401,7 @@ point reaches the beginning or end of the buffer, stop there."
     (setq ac-modes '(emacs-lisp-mode
                      lisp-mode
                      lisp-interaction-mode
+		     terraform-mode
                      c-mode
                      c++-mode
                      go-mode
@@ -423,7 +438,6 @@ point reaches the beginning or end of the buffer, stop there."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-selection ((t (:background "color-22" :distant-foreground "black"))))
- '(region ((t (:background "brightblack")))))
+ )
 (provide '.emacs)
 ;;; .emacs ends here

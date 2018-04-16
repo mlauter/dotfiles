@@ -1,13 +1,13 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/mlauter/.oh-my-zsh
+export ZSH=/Users/mlauter/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-  ZSH_THEME="my-robbyrussell"
+ZSH_THEME="my-robbyrussell"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -86,66 +86,52 @@ export ALTERNATE_EDITOR=""
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-cd ~/development/Etsyweb
-eval $(dbaliases)
-source ~/development/bin/xdebug_toggle
-
-# source fzf for fuzzy history searching
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export TERM=xterm-256color
-export CLASSPATH=/home/mlauter/irccat
-export PATH=$PATH:/home/mlauter/development/bin
 export TZ='America/New_York'
 
-GIT_PROMPT_RODEO="🦄"
-
-bindkey "^[^[[C" forward-word
-bindkey "^[^[[D" backward-word
-bindkey "^[[1;3C" forward-word
-bindkey "^[[1;3D" backward-word
-
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias lb='ls -B'
 alias gdiff='gist -t diff'
-alias ll='ls -al'
-alias lb='ls -B -I "#*#"'
-alias etsyphp='sudo -u apache ETSY_ENVIRONMENT=development php'
-alias etsy_aux='dbconnect etsy_aux_A'
-alias db_vertica='dbconnect vertica'
-alias db_atlas='dbconnect etsy_atlas_A'
-alias cdew='cd ~/development/Etsyweb'
 alias gl='git log --graph --pretty="format:%C(yellow)%h%Cblue%d%Creset %s %C(white)"''""'
-alias gderp='git add --all && git commit -m "derp" && git rebase -i'
+alias gderp='git add --all ;and git commit -m "derp" ;and git rebase -i'
 alias g='git'
+alias cdgr='cd `git rev-parse --show-toplevel`'
 
 alias gcp='git cherry-pick'
 alias gco='git checkout'
 
-alias e="emacsclient -t"
+alias e="emacs"
 alias blink='printf "[5m%s[0m"'
+export TERM=xterm-256color
 
-alias vertica='/opt/vertica/bin/vsql -U mlauter -h vertica-prod -w VjVvYJJXWWGZZqDBxdYhEfaBGQrgV7Kdi vbit'
-alias wrangle='php ~/development/Etsyweb/bin/rodeo/wrangle.php'
+alias reattach="ssh vm -t tmux a -t 'main'"
 
-# pbcopy () {
-#     ssh `echo $SSH_CLIENT | awk '{print $1}'` pbcopy;
+bindkey "^[^[[C" forward-word
+bindkey "^[^[[D" backward-word
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
 
-# }
+# For some reason necessary within tmux
+bindkey '\e\eOD' backward-word
+bindkey '\e\eOC' forward-word
 
-# pbpaste () {
-#     ssh `echo $SSH_CLIENT | awk '{print $1}'` pbpaste;
-
-# }
-
-omnichef () {
-    git rpull && knife spork omni "$@" && git commit --amend && git rpull && git push && knife spork promote "$@" --remote
-
-}
-
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+# go
+export GOROOT=/usr/local/opt/go/libexec
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
+export PATH=$(brew --prefix)/opt/python/libexec/bin:$PATH
+export PATH="/Users/mlauter/Library/Python/3.6/bin:$PATH"
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
-source /usr/bin/virtualenvwrapper.sh
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python
+source /usr/local/bin/virtualenvwrapper.sh
 
-export PATH=$PATH:/home/mlauter/bin
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/mlauter/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/mlauter/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/mlauter/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/mlauter/google-cloud-sdk/completion.zsh.inc'; fi
+
+source ~/.iterm2_shell_integration.zsh

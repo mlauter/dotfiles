@@ -2,7 +2,7 @@
 GIT_PROMPT_RODEO="🐴"
 
 prompt_dir() {
-    echo -n "%{$fg[cyan]%}$(shrink_path -f)%{$reset_color%}"
+    echo -n "%{$fg[magenta]%}$(shrink_path -f)%{$reset_color%}"
 }
 
 # Status:

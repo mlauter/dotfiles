@@ -1,7 +1,7 @@
 [core]
 	editor = emacsclient -t -a=\"\"
 	pager = less -F -X
-	excludesfile = /home/mlauter/.gitignore_global
+	excludesfile = /Users/mlauter/.gitignore_global
 [alias]
 	co = checkout
 	st = status
