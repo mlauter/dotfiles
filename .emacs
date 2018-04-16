@@ -323,17 +323,21 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;; js
 ;; Ruby
+(use-package ruby-mode
+  :ensure t
+  :defer t
+  :mode ("\\.rb\\'"))
+
 (use-package enh-ruby-mode
   :ensure t
   :defer t
-  :mode (("\\.rb\\'"       . enh-ruby-mode))
+  :mode ("\\.rb\\'")
   :config (progn
 	    (setq enh-ruby-indent-level 2
 		  enh-ruby-add-encoding-comment-on-save nil
 		  enh-ruby-deep-indent-paren nil
 		  enh-ruby-bounce-deep-indent t
-		  enh-ruby-hanging-indent-level 2)
-	    (setq enh-ruby-program "/Users/senny/.rbenv/versions/2.4.0/bin/ruby")))
+		  enh-ruby-hanging-indent-level 2)))
 
 (use-package rubocop
   :ensure t
@@ -404,6 +408,7 @@ point reaches the beginning or end of the buffer, stop there."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(evil-leader/in-all-states t t)
+ '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
     (badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
