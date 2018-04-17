@@ -196,6 +196,12 @@
 ;; Meta
 
 ;; Function keys
+(defun backward-kill-line (arg)
+  "Kill ARG lines backward."
+  (interactive "p")
+  (kill-line (- 1 arg)))
+(global-set-key (kbd "C-c u") 'backward-kill-line)
+
 (defun smarter-move-beginning-of-line (arg)
   "Move point back to indentation of beginning of line.
 
