@@ -91,7 +91,7 @@ eval $(dbaliases)
 source ~/development/bin/xdebug_toggle
 
 # source fzf for fuzzy history searching
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export TERM=xterm-256color
 export CLASSPATH=/home/mlauter/irccat
