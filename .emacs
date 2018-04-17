@@ -262,14 +262,22 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package badger-theme
   :ensure t
+  :disabled t
   :config (load-theme 'badger t))
 
 ;; Mouse
 (xterm-mouse-mode t)
-(mouse-wheel-mode 't)
 (setq mouse-wheel-follow-mouse 't)
+;; scroll support for osx
+(global-set-key [mouse-4] 'scroll-down-line)
+(global-set-key [mouse-5] 'scroll-up-line)
 
 ;; Misc
+;; subword mode everywhere
+(subword-mode 1)
+
+;; Require final newline everywhere
+(setq require-final-newline t)
 
 ;; etsy github link
   (defun get-github-prefix (rel-path)
@@ -429,7 +437,6 @@ point reaches the beginning or end of the buffer, stop there."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(evil-leader/in-all-states t t)
- '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
     (badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
