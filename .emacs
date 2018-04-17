@@ -307,7 +307,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;; Language support
 ;; no tabs
-(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 
 ;; php and webmode
 (use-package php-mode
