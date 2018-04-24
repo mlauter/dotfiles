@@ -315,6 +315,8 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t
   :init
   (add-hook 'php-mode-hook #'ggtags-mode))
+;; Load production.php in fundamental mode because it's too big
+(add-to-list 'auto-mode-alist '(".*production\.php\\'" . fundamental-mode))
 
 (use-package web-mode
   :ensure t
