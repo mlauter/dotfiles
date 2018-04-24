@@ -49,32 +49,32 @@
          ("C-SPC" . helm-dabbrev)
          ("M-y" . helm-show-kill-ring)
          ("C-x b" . helm-buffers-list)
-	 ("C-c g" . my-helm-grep-do-git-grep))
+         ("C-c g" . my-helm-grep-do-git-grep))
   :bind (:map helm-map
-	      ("TAB" . helm-execute-persistent-action)
-	      ("<tab>" . helm-execute-persistent-action)
-	      ("C-z" . helm-select-action)
-	      ("M-i" . helm-previous-line)
-	      ("M-k" . helm-next-line)
-	      ("M-I" . helm-previous-page)
-	      ("M-K" . helm-next-page)
-	      ("M-h" . helm-beginning-of-buffer)
-	      ("M-H" . helm-end-of-buffer))
+              ("TAB" . helm-execute-persistent-action)
+              ("<tab>" . helm-execute-persistent-action)
+              ("C-z" . helm-select-action)
+              ("M-i" . helm-previous-line)
+              ("M-k" . helm-next-line)
+              ("M-I" . helm-previous-page)
+              ("M-K" . helm-next-page)
+              ("M-h" . helm-beginning-of-buffer)
+              ("M-H" . helm-end-of-buffer))
   :config (progn
-	    (setq helm-buffers-fuzzy-matching t)
-	    (setq helm-completion-in-region-fuzzy-match t)
-	    (setq helm-mode-fuzzy-match t)
-	    (setq-default helm-M-x-fuzzy-match t)
-	    (setq helm-display-function 'helm-display-buffer-in-own-frame
-	    	  helm-display-buffer-reuse-frame t
-	    	  helm-use-undecorated-frame-option t)
+            (setq helm-buffers-fuzzy-matching t)
+            (setq helm-completion-in-region-fuzzy-match t)
+            (setq helm-mode-fuzzy-match t)
+            (setq-default helm-M-x-fuzzy-match t)
+            (setq helm-display-function 'helm-display-buffer-in-own-frame
+                  helm-display-buffer-reuse-frame t
+                  helm-use-undecorated-frame-option t)
 
             (helm-mode 1)
-	    ;; In order for this to actually work need to setup git config:
-	    ;; git config --global core.excludesfile ~/.gitignore_global
-	    (defun my-helm-grep-do-git-grep (not-all)
-	      (interactive "P")
-	      (helm-grep-git-1 default-directory (null not-all)))))
+            ;; In order for this to actually work need to setup git config:
+            ;; git config --global core.excludesfile ~/.gitignore_global
+            (defun my-helm-grep-do-git-grep (not-all)
+              (interactive "P")
+              (helm-grep-git-1 default-directory (null not-all)))))
 (use-package helm-descbinds
   :ensure t
   :bind ("C-h b" . helm-descbinds))
@@ -83,9 +83,9 @@
   :bind ("C-x f" . my-fzf)
   ;; If we're in a git repo, initiate fzf from the root
   :config (progn
-	    (defun my-fzf ()
-		(interactive)
-		(if (vc-git-registered buffer-file-name) (fzf-git) (fzf)))))
+            (defun my-fzf ()
+                (interactive)
+                (if (vc-git-registered buffer-file-name) (fzf-git) (fzf)))))
 
 (global-set-key (kbd "C-c g") 'my-helm-grep-do-git-grep)
 
@@ -93,16 +93,16 @@
   :ensure t
   :config
   (setq-default flycheck-disabled-checkers '(php-phpmd
-					     php-phpcs))
+                                             php-phpcs))
   (progn
     (add-hook 'after-init-hook 'global-flycheck-mode)))
 
 (use-package drag-stuff
   :ensure t
   :bind (("M-<up>" . drag-stuff-up)
-	 ("M-<down>" . drag-stuff-down)
-	 ("M-<left>" . shift-left)
-	 ("M-<right>" . shift-right)))
+         ("M-<down>" . drag-stuff-down)
+         ("M-<left>" . shift-left)
+         ("M-<right>" . shift-right)))
 
 (use-package magit
   :ensure t
@@ -170,14 +170,15 @@
   (setq evil-default-state 'emacs)
 
   (bind-map my-base-leader-map
-	    :keys ("M-m")
-	    :evil-keys ("SPC")
-	    :evil-states (normal motion visual)
-	    :bindings ("tn" 'linum-mode
-		       "a" 'avy-goto-word-or-subword-1
-		       "f" 'my-fzf
-		       "g" 'etsy-github-link
-		       "tf" 'terraform-format-buffer
+            :keys ("M-m")
+            :evil-keys ("SPC")
+            :evil-states (normal motion visual)
+            :bindings ("tn" 'linum-mode
+                       "a" 'avy-goto-word-or-subword-1
+                       "ff" 'my-fzf
+                       "fd" 'fzf-directory
+                       "g" 'etsy-github-link
+                       "tf" 'terraform-format-buffer
                        "rb" 'revert-buffer))
 
   (progn
@@ -319,7 +320,7 @@ point reaches the beginning or end of the buffer, stop there."
 ;; Indent switch cases correctly
 (add-hook 'c-mode-common-hook
           (lambda ()
-	    (c-set-offset 'case-label '+)))
+            (c-set-offset 'case-label '+)))
 
 ;; Language support
 ;; no tabs
@@ -355,11 +356,11 @@ point reaches the beginning or end of the buffer, stop there."
   :defer t
   :mode ("\\.rb\\'")
   :config (progn
-	    (setq enh-ruby-indent-level 2
-		  enh-ruby-add-encoding-comment-on-save nil
-		  enh-ruby-deep-indent-paren nil
-		  enh-ruby-bounce-deep-indent t
-		  enh-ruby-hanging-indent-level 2)))
+            (setq enh-ruby-indent-level 2
+                  enh-ruby-add-encoding-comment-on-save nil
+                  enh-ruby-deep-indent-paren nil
+                  enh-ruby-bounce-deep-indent t
+                  enh-ruby-hanging-indent-level 2)))
 
 (use-package rubocop
   :ensure t
@@ -409,7 +410,7 @@ point reaches the beginning or end of the buffer, stop there."
     (setq ac-modes '(emacs-lisp-mode
                      lisp-mode
                      lisp-interaction-mode
-		     terraform-mode
+                     terraform-mode
                      c-mode
                      c++-mode
                      go-mode
@@ -424,9 +425,9 @@ point reaches the beginning or end of the buffer, stop there."
                      javascript-mode
                      js-mode
                      js2-mode
-		     js3-mode
+                     js3-mode
                      php-mode
-		     web-mode
+                     web-mode
                      css-mode
                      sh-mode
                      fortran-mode))))
