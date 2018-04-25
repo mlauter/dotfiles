@@ -130,7 +130,7 @@
   :config
   (add-hook 'c-mode-common-hook
               (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'scala-mode)
                   (ggtags-mode 1)))))
 
 (use-package linum-relative
@@ -362,6 +362,34 @@ point reaches the beginning or end of the buffer, stop there."
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+;; scala
+(use-package scala-mode
+  :ensure t
+  :defer t
+  :interpreter
+  ("scala" . scala-mode)
+  :init
+  (progn
+    (dolist (ext '(".cfe" ".cfs" ".si" ".gen" ".lock"))
+      (add-to-list 'completion-ignored-extensions ext)))
+  :config
+  (progn
+    ;; Automatically insert asterisk in a comment when enabled
+    (defun scala/newline-and-indent-with-asterisk ()
+      (interactive)
+      (newline-and-indent)
+      (when scala-auto-insert-asterisk-in-comments
+        (scala-indent:insert-asterisk-on-multiline-comment)))
+
+    (evil-define-key 'insert scala-mode-map
+      (kbd "RET") 'scala/newline-and-indent-with-asterisk)
+
+    (evil-define-key 'normal scala-mode-map "J" 'spacemacs/scala-join-line)
+
+    (setq scala-indent:align-forms t
+            scala-indent:align-parameters t
+            scala-indent:default-run-on-strategy scala-indent:operator-strategy))
+  )
 ;; autocompletion
 (use-package auto-complete
   :ensure t
@@ -409,7 +437,8 @@ point reaches the beginning or end of the buffer, stop there."
                      web-mode
                      css-mode
                      sh-mode
-                     fortran-mode))))
+                     fortran-mode
+                     scala-mode))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
