@@ -119,9 +119,9 @@
     (smartparens-global-mode 1)
     (show-smartparens-global-mode 1))
   :config
-  (sp-local-pair 'php-mode "/**" "*/")
   (progn
-    (setq smartparens-strict-mode t)))
+    (setq smartparens-strict-mode nil)
+    (sp-local-pair 'php-mode "/**" "*/")))
 
 (use-package ggtags
   :ensure t
@@ -408,7 +408,8 @@ point reaches the beginning or end of the buffer, stop there."
 
     (setq scala-indent:align-forms t
             scala-indent:align-parameters t
-            scala-indent:default-run-on-strategy scala-indent:operator-strategy))
+            scala-indent:default-run-on-strategy scala-indent:eager-strategy
+            scala-indent:step 2))
   )
 ;; autocompletion
 (use-package auto-complete
