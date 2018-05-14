@@ -39,13 +39,13 @@
   :config (setq shackle-rules '(("\\`\\*helm.*?\\*\\'" :regexp t :align t :ratio 0.4)))
   :init (shackle-mode 1))
 
-;; rebind normal M-x to C-x M-x
-(global-set-key (kbd "C-x M-x") 'execute-extended-command)
+;; Helm
+
 (use-package helm
   :ensure t
-  :bind (("M-x" . helm-M-x)
+  :init (helm-mode 1)
+    :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files)
-         ("C-x r" . helm-recentf)
          ("C-SPC" . helm-dabbrev)
          ("M-y" . helm-show-kill-ring)
          ("C-x b" . helm-buffers-list)
@@ -67,7 +67,8 @@
             (setq-default helm-M-x-fuzzy-match t)
             (setq helm-display-function 'helm-display-buffer-in-own-frame
                   helm-display-buffer-reuse-frame t
-                  helm-use-undecorated-frame-option t)
+                  helm-use-undecorated-frame-option t
+                  helm-ff-skip-boring-files t)
 
             (helm-mode 1)
             ;; In order for this to actually work need to setup git config:
@@ -75,17 +76,26 @@
             (defun my-helm-grep-do-git-grep (not-all)
               (interactive "P")
               (helm-grep-git-1 default-directory (null not-all)))))
+
+;; rebind normal M-x to C-x M-x
+(global-set-key (kbd "C-x M-x") 'execute-extended-command)
 (use-package helm-descbinds
   :ensure t
   :bind ("C-h b" . helm-descbinds))
+(use-package helm-projectile
+  :ensure t
+  :commands helm-projectile)
+
 (use-package fzf
   :ensure t
   :bind ("C-x f" . my-fzf)
   ;; If we're in a git repo, initiate fzf from the root
   :config (progn
             (defun my-fzf ()
-                (interactive)
-                (if (vc-git-registered buffer-file-name) (fzf-git) (fzf)))))
+              (interactive)
+              (if (vc-git-registered (or buffer-file-name default-directory))
+                  (fzf-git)
+                (fzf)))))
 
 (global-set-key (kbd "C-c g") 'my-helm-grep-do-git-grep)
 
@@ -148,6 +158,12 @@
   :config
   (global-evil-surround-mode 1))
 
+(use-package evil-vimish-fold
+  :ensure t
+  :defer t
+  :config
+  (evil-vimish-fold-mode 1))
+
 (use-package evil-escape
   :ensure t
   :defer t
@@ -179,7 +195,9 @@
                        "fd" 'fzf-directory
                        "g" 'etsy-github-link
                        "tf" 'terraform-format-buffer
-                       "rb" 'revert-buffer))
+                       "rb" 'revert-buffer
+                       "vf" 'vimish-fold
+                       "vt" 'vimish-fold-toggle))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)
@@ -232,6 +250,7 @@ point reaches the beginning or end of the buffer, stop there."
                 'smarter-move-beginning-of-line)
 
 ;; Key bindings
+
 ;; Switch C-a and M-m
 (global-set-key (kbd "C-x C-r") 'comment-region)
 
@@ -332,6 +351,12 @@ point reaches the beginning or end of the buffer, stop there."
   :init
   (add-hook 'php-mode-hook #'ggtags-mode))
 
+(use-package geben
+  :ensure t
+  :config
+  (if (equal "development" (getenv "ETSY_ENVIRONMENT"))
+      (setq geben-dbgp-default-port 9003)))
+
 (use-package web-mode
   :ensure t
   :mode ("\\.tpl\\'" "\\.mustache\\'" "\\.jsx\\'")
@@ -345,6 +370,15 @@ point reaches the beginning or end of the buffer, stop there."
   (setq web-mode-enable-css-colorization t))
 
 ;; js
+(use-package json-mode
+  :ensure t
+  :mode ("\\.json\\'")
+  :config (add-hook 'json-mode-hook
+          (lambda ()
+            (make-local-variable 'js-indent-level)
+            (setq js-indent-level 2)))
+  )
+
 ;; Ruby
 (use-package ruby-mode
   :ensure t
