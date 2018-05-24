@@ -51,7 +51,7 @@ DISABLE_AUTO_UPDATE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions shrink-path Z wd)
+plugins=(git zsh-autosuggestions shrink-path Z wd kubectl)
 
 source $ZSH/oh-my-zsh.sh
 
