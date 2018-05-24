@@ -95,7 +95,7 @@
                 (fzf)))
             (defun fzf-home ()
               (interactive)
-              (fzf/start "/Users/mlauter"))))
+              (fzf/start "~/"))))
 
 (global-set-key (kbd "C-c g") 'my-helm-grep-do-git-grep)
 
