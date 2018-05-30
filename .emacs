@@ -258,6 +258,20 @@ point reaches the beginning or end of the buffer, stop there."
                 'smarter-move-beginning-of-line)
 
 ;; Key bindings
+;; I don't ever use the narrow commands so i don't need C-x n
+(global-unset-key (kbd "C-x n"))
+
+;; Now bind C-x p and C-x n to (previous-buffer) and (next-buffer) to free up C-x + arrow keys
+(global-set-key (kbd "C-x p") 'previous-buffer)
+(global-set-key (kbd "C-x n") 'next-buffer)
+
+;; Use the arrow keys for window navigation
+(global-set-key (kbd "C-x <right>") 'evil-window-right)
+(global-set-key (kbd "C-x <left>") 'evil-window-left)
+(global-set-key (kbd "C-x <up>") 'evil-window-up)
+(global-set-key (kbd "C-x <down>") 'evil-window-down)
+;; go to the window i was last on
+(global-set-key (kbd "C-x w") 'evil-window-prev)
 
 ;; Switch C-a and M-m
 (global-set-key (kbd "C-x C-r") 'comment-region)
