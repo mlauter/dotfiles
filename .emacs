@@ -44,7 +44,7 @@
       (interactive)
       (if (vc-git-registered (or buffer-file-name default-directory))
           (fzf-git)
-        (fzf/start "/home/mlauter")))))
+        (fzf/start "/Users/mlauter")))))
 (with-eval-after-load 'fzf
   (progn
     (defun fzf-home()
