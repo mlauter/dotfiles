@@ -50,7 +50,7 @@
     (defun fzf-home()
       "Start fzf from my homedir."
       (interactive)
-      (fzf/start "/home/mlauter"))
+      (fzf/start "/Users/mlauter"))
     )
   )
 
