@@ -33,6 +33,27 @@
   (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
   (require 'use-package))
 
+(use-package fzf
+  :ensure t
+  :defer t
+  :bind ("C-x f" . my-fzf)
+  ;; If we're in a git repo, initiate fzf from the root
+  :config
+  (progn
+    (defun my-fzf ()
+      (interactive)
+      (if (vc-git-registered (or buffer-file-name default-directory))
+          (fzf-git)
+        (fzf/start "/home/mlauter")))))
+(with-eval-after-load 'fzf
+  (progn
+    (defun fzf-home()
+      "Start fzf from my homedir."
+      (interactive)
+      (fzf/start "/home/mlauter"))
+    )
+  )
+
 (use-package shackle
   :ensure t
   :defer t
@@ -82,20 +103,6 @@
 (use-package helm-descbinds
   :ensure t
   :bind ("C-h b" . helm-descbinds))
-
-(use-package fzf
-  :ensure t
-  :bind ("C-x f" . my-fzf)
-  ;; If we're in a git repo, initiate fzf from the root
-  :config (progn
-            (defun my-fzf ()
-              (interactive)
-              (if (vc-git-registered (or buffer-file-name default-directory))
-                  (fzf-git)
-                (fzf)))
-            (defun fzf-home ()
-              (interactive)
-              (fzf/start "~/"))))
 
 (global-set-key (kbd "C-c g") 'my-helm-grep-do-git-grep)
 
