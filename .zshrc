@@ -51,7 +51,7 @@ DISABLE_AUTO_UPDATE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions shrink-path Z wd kubectl)
+plugins=(git zsh-autosuggestions shrink-path Z wd)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -86,12 +86,18 @@ export ALTERNATE_EDITOR=""
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-cd ~/development/Etsyweb
-eval $(dbaliases)
-source ~/development/bin/xdebug_toggle
+#cd ~/development/Etsyweb
+#eval $(dbaliases)
 
 # source fzf for fuzzy history searching
 #[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Enable Ctrl-x-e to edit command line
+autoload -U edit-command-line
+# Emacs style
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
+bindkey '^x^e' edit-command-line
 
 export TERM=xterm-256color
 export CLASSPATH=/home/mlauter/irccat
@@ -143,9 +149,14 @@ omnichef () {
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Devel
-source /usr/bin/virtualenvwrapper.sh
-export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/Devel
+# source /usr/bin/virtualenvwrapper.sh
+# export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python
 
 export PATH=$PATH:/home/mlauter/bin
+
+export GOROOT=/usr/local/go/1.9.2
+export GODEBUG=netdns=go
+export GOPATH=/home/mlauter/development/go
+export GODEBUG=netdns=go
