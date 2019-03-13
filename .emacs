@@ -11,7 +11,7 @@
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
   (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/"))))
 ;;; This won't really do anything until Emacs 25.1+
 (defvar package-archive-priorities)
@@ -32,6 +32,13 @@
   ;; Following line is not needed if use-package.el is in ~/.emacs.d
   (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
   (require 'use-package))
+
+;; store all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
 
 (use-package fzf
   :ensure t
@@ -110,7 +117,9 @@
   :ensure t
   :config
   (setq-default flycheck-disabled-checkers '(php-phpmd
-                                             php-phpcs))
+                                             php-phpcs
+                                             javascript-jshint
+                                             json-jsonlist))
   (progn
     (add-hook 'after-init-hook 'global-flycheck-mode)))
 
@@ -230,6 +239,12 @@
   (kill-line (- 1 arg)))
 (global-set-key (kbd "C-c u") 'backward-kill-line)
 
+(defun worklog-date ()
+  "Insert date at point formatted for worklog."
+  (interactive)
+  (insert (shell-command-to-string "date +\"%b %d, %Y\"")))
+(global-set-key (kbd "C-c d") 'worklog-date)
+
 (defun smarter-move-beginning-of-line (arg)
   "Move point back to indentation of beginning of line.
 
@@ -307,6 +322,10 @@ point reaches the beginning or end of the buffer, stop there."
   :disabled t
   :config (load-theme 'badger t))
 
+;; show paren style
+(show-paren-mode t)
+(setq show-paren-style 'expression)
+
 ;; Mouse
 (xterm-mouse-mode t)
 (setq mouse-wheel-follow-mouse 't)
@@ -373,6 +392,11 @@ point reaches the beginning or end of the buffer, stop there."
   :init
   (add-hook 'php-mode-hook #'ggtags-mode))
 
+(use-package go-mode
+  :ensure t
+  :init
+  )
+
 (use-package geben
   :ensure t
   :config
@@ -383,15 +407,29 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t
   :mode ("\\.tpl\\'" "\\.mustache\\'" "\\.jsx\\'")
   :init
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
 
   (setq web-mode-enable-auto-pairing t)
   (setq web-mode-enable-auto-expanding t)
-  (setq web-mode-enable-css-colorization t))
+  (setq web-mode-enable-css-colorization t)
+  :config
+  (defadvice web-mode-highlight-part (around tweak-jsx-activate)
+    (if (equal web-mode-content-type "jsx")
+        (let ((web-mode-enable-part-face nil))
+          ad-do-it)
+      ad-do-it)))
 
-;; js
+(use-package js2-mode
+  :ensure t
+  :commands js2-mode
+  :mode (("\\.js$" . js2-mode)
+         ("\\.es6$" . js2-mode)
+         ("\\.ejs$" . js2-mode)))
+
+;; json
 (use-package json-mode
   :ensure t
   :mode ("\\.json\\'")
@@ -483,7 +521,7 @@ point reaches the beginning or end of the buffer, stop there."
     (ac-set-trigger-key "TAB")
     (ac-config-default)
 
-    (setq ac-delay 0.02)
+    (setq ac-delay 0.5)
     (setq ac-use-menu-map t)
     (setq ac-menu-height 50)
     (setq ac-use-quick-help nil)
@@ -510,7 +548,6 @@ point reaches the beginning or end of the buffer, stop there."
                      javascript-mode
                      js-mode
                      js2-mode
-                     js3-mode
                      php-mode
                      web-mode
                      css-mode
@@ -533,15 +570,16 @@ point reaches the beginning or end of the buffer, stop there."
  '(helm-boring-file-regexp-list
    (quote
     ("\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.svn\\(/\\|$\\)" "\\.hg\\(/\\|$\\)" "\\.git\\(/\\|$\\)" "\\.bzr\\(/\\|$\\)" "CVS\\(/\\|$\\)" "_darcs\\(/\\|$\\)" "_MTN\\(/\\|$\\)" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.dfsl$" "\\.pfsl$" "\\.d64fsl$" "\\.p64fsl$" "\\.lx64fsl$" "\\.lx32fsl$" "\\.dx64fsl$" "\\.dx32fsl$" "\\.fx64fsl$" "\\.fx32fsl$" "\\.sx64fsl$" "\\.sx32fsl$" "\\.wx64fsl$" "\\.wx32fsl$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\~$" "\\#$")))
+ '(json-mode-indent-level 4)
  '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
-    (badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
+    (javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(font-lock-doc-face ((t (:foreground "brightblack")))))
 (provide '.emacs)
 ;;; .emacs ends here

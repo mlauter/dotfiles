@@ -135,3 +135,7 @@ if [ -f '/Users/mlauter/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/ml
 if [ -f '/Users/mlauter/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/mlauter/google-cloud-sdk/completion.zsh.inc'; fi
 
 source ~/.iterm2_shell_integration.zsh
+export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
+
+export JAVA_HOME="usr/local/opt/java/jre1.8.0_191.jre/Contents/Home"
+export PATH="/usr/local/opt/php@7.1/bin:$PATH"
