@@ -11,18 +11,19 @@
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/"))))
+  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")) t))
 ;;; This won't really do anything until Emacs 25.1+
 (defvar package-archive-priorities)
-(setq package-archive-priorities '(("MELPA Stable" . 10)
+(setq package-archive-priorities '(("MELPA Stable" . 0)
                                    ("GNU"          . 5)
-                                   ("MELPA"        . 0)))
+                                   ("MELPA"        . 10)))
 (package-initialize)
 
 ;; This is only needed once, near the top of the file
 (eval-when-compile
   ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "~/flycheck-phanclient")
   (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
   (require 'use-package))
 
@@ -116,6 +117,9 @@
                                              php-phpcs))
   (progn
     (add-hook 'after-init-hook 'global-flycheck-mode)))
+
+;; phan! phan client not working on etsyweb
+(require 'flycheck-phanclient)
 
 (use-package drag-stuff
   :ensure t
@@ -223,6 +227,9 @@
 
 (use-package avy
   :ensure t)
+
+(use-package origami
+  :ensure t)
 ;; Meta
 
 ;; Function keys
@@ -276,30 +283,44 @@ point reaches the beginning or end of the buffer, stop there."
 (global-set-key (kbd "C-x w") 'evil-window-prev)
 
 ;; Switch C-a and M-m
+
 (global-set-key (kbd "C-x C-r") 'comment-region)
+(global-set-key (kbd "M-;") 'comment-line)
+(global-set-key (kbd "C-x ;") 'comment-dwim)
 
 ;; Themes
-(use-package molokai-theme
-  :ensure t
-  :disabled t
-  :load-path "themes"
-  :init
-  (setq molokai-theme-kit t)
-  :config
-  (load-theme 'molokai t)
-  )
+;; (use-package molokai-theme
+;;   :ensure t
+;;   :disabled t
+;;   :load-path "themes"
+;;   :init
+;;   (setq molokai-theme-kit t)
+;;   :config
+;;   (load-theme 'molokai t)
+;;   )
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t
-  :disabled t
-  :load-path "themes"
-  :config
-  (load-theme 'sanityinc-tomorrow-bright t)
-  )
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :ensure t
+;;   :disabled t
+;;   :load-path "themes"
+;;   :config
+;;   (load-theme 'sanityinc-tomorrow-bright t)
+;;   )
 
 (use-package badger-theme
   :ensure t
+  :disabled t
   :config (load-theme 'badger t))
+
+(use-package moe-theme
+  :ensure t
+  :config (progn
+            (moe-theme-set-color 'green)
+            (moe-dark)))
+
+;; show paren style
+(show-paren-mode t)
+(setq show-paren-style 'expression)
 
 ;; Mouse
 (xterm-mouse-mode t)
@@ -550,12 +571,13 @@ point reaches the beginning or end of the buffer, stop there."
  '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
-    (evil-vimish-fold emacs-helm badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
+    (moe-theme go-mode origami column-enforce-mode evil-vimish-fold emacs-helm badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-doc-face ((t (:foreground "brightblack"))))
  '(helm-ff-directory ((t (:background "black" :foreground "brightmagenta" :underline t :weight semi-bold))))
  '(helm-ff-executable ((t (:foreground "brightcyan"))))
  '(helm-ff-file ((t (:foreground "brightwhite"))))
