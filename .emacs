@@ -204,7 +204,7 @@
                        "ff" 'my-fzf
                        "fd" 'fzf-directory
                        "fh" 'fzf-home
-                       "g" 'etsy-github-link
+                       "g" 'github-link
                        "rb" 'revert-buffer
                        "vf" 'vimish-fold
                        "vt" 'vimish-fold-toggle))
@@ -338,6 +338,26 @@ point reaches the beginning or end of the buffer, stop there."
               (message (concat github-prefix github-suffix "#L" current-line))))
         (message "Not an etsy path"))))
 
+;; any github link
+(defun github-link ()
+  "Get the github url of any point in a file in a git repo."
+  (interactive)
+  (let ((remote-url
+         (shell-command-to-string "git config --get remote.origin.url"))
+        (git-root-path
+         (locate-dominating-file default-directory ".git")))
+    (if (or (not git-root-path) (string= "" remote-url))
+        (message "github-link: not a git repo!")
+        (message
+         (format "https://%s/blob/master/%s#L%d"
+                 (progn
+                   (string-match "\\(^[a-z]+?://\\)?\\(.*?\\)\\(\\.git\\)?$" remote-url)
+                   (match-string 2 remote-url))
+                 (substring (buffer-file-name) (length (expand-file-name git-root-path)))
+                 (line-number-at-pos))))))
+
+(provide 'github-link)
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Treat 'y' or <CR> as yes, 'n' as no.
@@ -349,6 +369,10 @@ point reaches the beginning or end of the buffer, stop there."
 (add-hook 'c-mode-common-hook
           (lambda ()
             (c-set-offset 'case-label '+)))
+
+;; subword mode by default
+(add-hook 'c-mode-common-hook
+          (lambda () (subword-mode 1)))
 
 ;; Language support
 ;; no tabs
@@ -370,8 +394,9 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.tpl\\'" "\\.mustache\\'" "\\.jsx\\'")
+  :mode ("\\.tpl\\'" "\\.mustache\\'" "\\.jsx\\'" "\\.erb\\'")
   :init
+  (add-hook 'web-mode-hook (lambda () (smartparens-mode 0)))
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
@@ -379,6 +404,11 @@ point reaches the beginning or end of the buffer, stop there."
   (setq web-mode-enable-auto-pairing t)
   (setq web-mode-enable-auto-expanding t)
   (setq web-mode-enable-css-colorization t))
+
+;; go
+(use-package go-mode
+  :ensure t
+  :mode ("\\.go\\'"))
 
 ;; js
 (use-package json-mode
@@ -466,9 +496,9 @@ point reaches the beginning or end of the buffer, stop there."
     (ac-set-trigger-key "TAB")
     (ac-config-default)
 
-    (setq ac-delay 0.02)
+    (setq ac-delay 0.5)
     (setq ac-use-menu-map t)
-    (setq ac-menu-height 50)
+    (setq ac-menu-height 10)
     (setq ac-use-quick-help nil)
     (setq ac-comphist-file  "~/.emacs.d/ac-comphist.dat")
     (setq ac-ignore-case nil)
@@ -505,6 +535,7 @@ point reaches the beginning or end of the buffer, stop there."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(c-basic-offset 4)
  '(evil-leader/in-all-states t t)
  '(fzf/directory-start "\"/home/mlauter\"")
  '(geben-dbgp-feature-list
