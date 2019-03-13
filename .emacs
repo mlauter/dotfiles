@@ -392,6 +392,7 @@ point reaches the beginning or end of the buffer, stop there."
             (c-set-offset 'case-label '+)))
 
 ;; subword mode by default
+(global-subword-mode 1)
 (add-hook 'c-mode-common-hook
           (lambda () (subword-mode 1)))
 
