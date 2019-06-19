@@ -1,6 +1,6 @@
 [core]
 	editor = emacsclient -t -a=\"\"
-	pager = less -F -X
+	pager = diff-highlight | less -F -X
 	excludesfile = /Users/mlauter/.gitignore_global
 [alias]
 	co = checkout

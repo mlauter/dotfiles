@@ -105,6 +105,19 @@ export TERM=xterm-256color
 
 alias reattach="ssh vm -t tmux a -t 'main'"
 
+# yolo ssh
+alias yssh="ssh -o StrictHostKeychecking=no"
+
+# docker
+alias dk='docker'
+alias dkps="docker ps --format '{{.ID}} ~ {{.Names}} ~ {{.Status}} ~ {{.Image}}'"
+alias dkrm='docker rm'
+alias dkl='docker logs'
+alias dklf='docker logs -f'
+alias dkflush='docker rm `docker ps --no-trunc -aq`'
+alias dkflush2='docker rmi $(docker images --filter "dangling=true" -q --no-trunc)'
+alias dkt='docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"'
+
 bindkey "^[^[[C" forward-word
 bindkey "^[^[[D" backward-word
 bindkey "^[[1;5C" forward-word

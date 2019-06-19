@@ -39,27 +39,23 @@
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
+;; Require version control
+(require 'vc)
 
 (use-package fzf
   :ensure t
   :defer t
-  :bind ("C-x f" . my-fzf)
-  ;; If we're in a git repo, initiate fzf from the root
-  :config
-  (progn
-    (defun my-fzf ()
-      (interactive)
-      (if (vc-git-registered (or buffer-file-name default-directory))
-          (fzf-git)
-        (fzf/start "/Users/mlauter")))))
-(with-eval-after-load 'fzf
-  (progn
-    (defun fzf-home()
-      "Start fzf from my homedir."
-      (interactive)
-      (fzf/start "/Users/mlauter"))
-    )
-  )
+  :bind ("C-x f" . fzf))
+
+(defun my-fzf()
+  "Start fzf from git root or from home dir if not a git dir."
+  (interactive)
+  (fzf/start (or (vc-root-dir) "/Users/mlauter")))
+
+(defun fzf-home()
+  "Start fzf from my homedir."
+  (interactive)
+  (fzf/start "/Users/mlauter"))
 
 (use-package shackle
   :ensure t
@@ -159,6 +155,11 @@
                 (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'scala-mode)
                   (ggtags-mode 1)))))
 
+(use-package auto-highlight-symbol
+  :ensure t
+  :init (setq ahs-idle-interval 0.5)
+  )
+
 (use-package linum-relative
   :ensure t
   :init (linum-relative-global-mode))
@@ -208,13 +209,14 @@
             :bindings ("tn" 'linum-mode
                        "a" 'avy-goto-word-or-subword-1
                        "ff" 'my-fzf
-                       "fd" 'fzf-directory
                        "fh" 'fzf-home
-                       "g" 'github-link
+                       "ghl" 'github-link
                        "tf" 'terraform-format-buffer
                        "rb" 'revert-buffer
                        "vf" 'vimish-fold
-                       "vt" 'vimish-fold-toggle))
+                       "vt" 'vimish-fold-toggle
+                       "gd" 'godef-describe
+                       "gj" 'godef-jump-other-window))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)
@@ -416,11 +418,6 @@ point reaches the beginning or end of the buffer, stop there."
   :init
   (add-hook 'php-mode-hook #'ggtags-mode))
 
-(use-package go-mode
-  :ensure t
-  :init
-  )
-
 (use-package geben
   :ensure t
   :config
@@ -457,7 +454,8 @@ point reaches the beginning or end of the buffer, stop there."
 ;; go
 (use-package go-mode
   :ensure t
-  :mode ("\\.go\\'"))
+  :mode ("\\.go\\'")
+  :config (add-hook 'before-save-hook 'gofmt-before-save))
 
 ;; js
 (use-package json-mode
@@ -535,6 +533,12 @@ point reaches the beginning or end of the buffer, stop there."
             scala-indent:default-run-on-strategy scala-indent:eager-strategy
             scala-indent:step 2))
   )
+
+;; tab display width in various modes
+(add-hook 'conf-toml-mode-hook
+      (lambda ()
+        (setq tab-width 2)))
+
 ;; autocompletion
 (use-package auto-complete
   :ensure t
@@ -605,7 +609,7 @@ point reaches the beginning or end of the buffer, stop there."
  '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
-    (javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
+    (auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
