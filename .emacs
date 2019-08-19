@@ -6,13 +6,17 @@
 
 ;; Load packages
 (require 'package)
+
+;; bug in Emacs: https://debbugs.gnu.org/34341 should be fixed in 26.3
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
   ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/"))))
+  ;; gnu elpa is down :( try a mirror?
+  (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/"))))
 ;;; This won't really do anything until Emacs 25.1+
 (defvar package-archive-priorities)
 (setq package-archive-priorities '(("MELPA Stable" . 10)
