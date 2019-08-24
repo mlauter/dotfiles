@@ -37,14 +37,13 @@
   (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.3")
   (require 'use-package))
 
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
 ;; Require version control
 (require 'vc)
+
+;; try to resolve path issue for finding fzf
+(when (eq system-type 'darwin)
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+  (setq exec-path (append exec-path '("/usr/local/bin"))))
 
 (use-package fzf
   :ensure t
@@ -54,12 +53,12 @@
 (defun my-fzf()
   "Start fzf from git root or from home dir if not a git dir."
   (interactive)
-  (fzf/start (or (vc-root-dir) "/Users/mlauter")))
+  (fzf/start (or (vc-root-dir) "/Users/mlauter-m1")))
 
 (defun fzf-home()
   "Start fzf from my homedir."
   (interactive)
-  (fzf/start "/Users/mlauter"))
+  (fzf/start "/Users/mlauter-m1"))
 
 (use-package shackle
   :ensure t
@@ -97,6 +96,7 @@
                   helm-display-buffer-reuse-frame t
                   helm-use-undecorated-frame-option t
                   helm-ff-skip-boring-files t)
+            (setq helm-ff-lynx-style-map t)
 
             (helm-mode 1)
             ;; In order for this to actually work need to setup git config:
@@ -125,10 +125,8 @@
 
 (use-package drag-stuff
   :ensure t
-  :bind (("M-<up>" . drag-stuff-up)
-         ("M-<down>" . drag-stuff-down)
-         ("M-<left>" . shift-left)
-         ("M-<right>" . shift-right)))
+  :bind (("ESC <up>" . drag-stuff-up)
+         ("ESC <down>" . drag-stuff-down)))
 
 (use-package magit
   :ensure t
@@ -156,7 +154,7 @@
   :config
   (add-hook 'c-mode-common-hook
               (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'scala-mode)
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'scala-mode 'enh-ruby-mode)
                   (ggtags-mode 1)))))
 
 (use-package auto-highlight-symbol
@@ -220,7 +218,8 @@
                        "vf" 'vimish-fold
                        "vt" 'vimish-fold-toggle
                        "gd" 'godef-describe
-                       "gj" 'godef-jump-other-window))
+                       "gj" 'godef-jump-other-window
+                       "tw" 'whitespace-mode))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)
@@ -455,6 +454,15 @@ point reaches the beginning or end of the buffer, stop there."
          ("\\.es6$" . js2-mode)
          ("\\.ejs$" . js2-mode)))
 
+;; another huge headache, get nodenv to work
+(use-package nodenv
+  :ensure t
+  :defer t
+  :config (progn
+            (add-to-list 'exec-path (expand-file-name "~/.nodenv/shims"))
+            (add-hook 'js-mode-hook 'nodenv-mode)
+            (add-hook 'ruby-mode-hook 'nodenv-mode)))
+
 ;; go
 (use-package go-mode
   :ensure t
@@ -468,7 +476,7 @@ point reaches the beginning or end of the buffer, stop there."
   :config (add-hook 'json-mode-hook
           (lambda ()
             (make-local-variable 'js-indent-level)
-            (setq js-indent-level 2)))
+            (setq js-indent-level 4)))
   )
 
 ;; Ruby
@@ -488,10 +496,46 @@ point reaches the beginning or end of the buffer, stop there."
                   enh-ruby-bounce-deep-indent t
                   enh-ruby-hanging-indent-level 2)))
 
+;; this was a huge headache to figure out
+;; to get emacs to find the right ruby and then be able to robe start:
+;; M-x rbenv-use-corresponding
+;; M-x robe-start
+(use-package rbenv
+  :ensure t
+  :defer t
+  :init (setq rbenv-show-active-ruby-in-modeline t)
+  :config (progn
+            (global-rbenv-mode)
+            (add-hook 'ruby-mode-hook 'rbenv-use-corresponding)))
+
 (use-package rubocop
   :ensure t
   :defer t
   :init (add-hook 'ruby-mode-hook 'rubocop-mode))
+
+(use-package robe
+  :defer t
+  :ensure t
+  :after ruby-mode
+  :init
+  :disabled t
+  (progn
+    (add-hook 'ruby-mode-hook 'robe-mode)
+    (with-eval-after-load 'auto-complete
+      (add-hook 'robe-mode-hook 'ac-robe-setup))))
+
+(use-package rspec-mode
+  :ensure t
+  :after ruby-mode
+  :init
+  (progn
+    (setq rspec-use-rake-flag nil))
+  :config
+  (progn
+    (defadvice rspec-compile (around rspec-compile-around activate)
+      "Use BASH shell for running the specs because of ZSH issues."
+      (let ((shell-file-name "/bin/bash"))
+        ad-do-it))))
 
 ;; markdown
 (use-package markdown-mode
@@ -609,11 +653,12 @@ point reaches the beginning or end of the buffer, stop there."
  '(helm-boring-file-regexp-list
    (quote
     ("\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.svn\\(/\\|$\\)" "\\.hg\\(/\\|$\\)" "\\.git\\(/\\|$\\)" "\\.bzr\\(/\\|$\\)" "CVS\\(/\\|$\\)" "_darcs\\(/\\|$\\)" "_MTN\\(/\\|$\\)" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.dfsl$" "\\.pfsl$" "\\.d64fsl$" "\\.p64fsl$" "\\.lx64fsl$" "\\.lx32fsl$" "\\.dx64fsl$" "\\.dx32fsl$" "\\.fx64fsl$" "\\.fx32fsl$" "\\.sx64fsl$" "\\.sx32fsl$" "\\.wx64fsl$" "\\.wx32fsl$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\~$" "\\#$")))
+ '(helm-ff-lynx-style-map t)
  '(json-mode-indent-level 4)
  '(max-specpdl-size 1400)
  '(package-selected-packages
    (quote
-    (auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
+    (nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

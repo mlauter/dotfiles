@@ -1,11 +1,11 @@
 [core]
 	editor = emacsclient -t -a=\"\"
 	pager = diff-highlight | less -F -X
-	excludesfile = /Users/mlauter/.gitignore_global
+	excludesfile = /Users/mlauter-m1/.gitignore_global
 [alias]
 	co = checkout
 	st = status
 	cp = cherry-pick
 	rpull = pull --rebase
 [include]
-	path = ~/dotfiles_local/.gitconfig_local
+	path = ~/.gitconfig_local

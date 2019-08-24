@@ -51,7 +51,7 @@ DISABLE_AUTO_UPDATE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions shrink-path Z wd)
+plugins=(git zsh-autosuggestions shrink-path Z wd rbenv nodenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -98,6 +98,7 @@ alias cdgr='cd `git rev-parse --show-toplevel`'
 
 alias gcp='git cherry-pick'
 alias gco='git checkout'
+alias gist='gist -p -c'
 
 alias e="emacs"
 alias edit=$EDITOR
@@ -129,11 +130,9 @@ bindkey '\e\eOD' backward-word
 bindkey '\e\eOC' forward-word
 
 # go
-export GOROOT=/usr/local/opt/go/libexec
+export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
 export PATH=$(brew --prefix)/opt/python/libexec/bin:$PATH
 export PATH="$HOME/Library/Python/3.6/bin:$PATH"
 
@@ -141,6 +140,10 @@ export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/opt/python/libexec/bin/python
 source /usr/local/bin/virtualenvwrapper.sh
+
+# gtags
+export GTAGSCONF=/usr/local/share/gtags/gtags.conf
+export GTAGSLABEL=pygments
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then source "$HOME/google-cloud-sdk/path.zsh.inc"; fi
@@ -153,3 +156,13 @@ export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
 
 export JAVA_HOME="usr/local/opt/java/jre1.8.0_191.jre/Contents/Home"
 export PATH="/usr/local/opt/php@7.1/bin:$PATH"
+export PATH="/usr/local/opt/gawk/bin:$PATH"
+export PATH="/usr/local/opt/gnu-sed/bin:$PATH"
+export PATH="/usr/local/opt/grep/bin:$PATH"
+export PATH="/usr/local/opt/gnu-tar/bin:$PATH"
+export PATH="/usr/local/opt/gnu-which/bin:$PATH"
+export PATH="/usr/local/opt/findutils/bin:$PATH"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+export BUNDLE_ENTERPRISE__CONTRIBSYS__COM=a13b6d0f:1091db91
