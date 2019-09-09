@@ -8,7 +8,6 @@
 (use-package fzf
   :ensure t
   :commands (fzf/start)
-  :bind ("C-x f" . fzf)
   :config
   (progn
     (defun my-fzf()
@@ -22,7 +21,39 @@
       (let ((homedir (getenv "HOME")))
         (fzf/start homedir)))))
 
-;; Helm
+(use-package swiper
+  :ensure t
+  :config (global-set-key "\C-s" 'swiper))
+
+(use-package counsel
+  :ensure t
+  :commands (counsel-fzf)
+  :bind ("C-x f" . counsel-fzf)
+  :init (setq counsel-find-file-ignore-regexp
+        (concat
+         ;; File names beginning with # or .
+         "\\(?:\\`[#.]\\)"
+         ;; File names ending with # or ~
+         "\\|\\(?:\\`.+?[#~]\\'\\)"))
+  :config
+  (counsel-mode 1)
+  :diminish counsel-mode)
+
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (counsel-projectile-mode t))
+
+(use-package ivy
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (define-key ivy-minibuffer-map (kbd "RET") 'ivy-done)
+  (ivy-mode 1)
+  :diminish ivy-mode)
+
+;; TODO projectile
+;; Helm -- deprecated
 ;; one day it might be nice to try and use helm as frontend to fzf
 (use-package shackle
   :ensure t
@@ -32,6 +63,7 @@
 
 (use-package helm
   :ensure t
+  :disabled t
   :init (helm-mode 1)
     :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files)

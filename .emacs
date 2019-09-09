@@ -44,7 +44,16 @@
   :ensure t
   :config
   (when (eq system-type 'darwin)
-  (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize)))
+
+;; Save all tempfiles in $TMPDIR/emacs$UID/
+(defconst emacs-tmp-dir (expand-file-name (format "emacs%d" (user-uid)) temporary-file-directory))
+(setq backup-directory-alist
+      `((".*" . ,emacs-tmp-dir)))
+(setq auto-save-file-name-transforms
+      `((".*" ,emacs-tmp-dir t)))
+(setq auto-save-list-file-prefix
+      emacs-tmp-dir)
 
 ;; Load the rest of my config
 ;; separated out into .emacs.d/custom for cleanliness
@@ -58,6 +67,13 @@
 ;; --- end setup ---
 
 ;; Packages
+(use-package all-the-icons
+  :ensure t)
+
+(use-package unicode-fonts
+  :ensure t
+  :config (unicode-fonts-setup))
+
 (use-package linum-relative
   :ensure t
   :init (linum-relative-global-mode))
@@ -70,9 +86,32 @@
 (use-package anzu
   :ensure t
   :defer t
+  :init (setq anzu-cons-mode-line-p nil)
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regexp))
-  :config (global-anzu-mode t))
+  :config (global-anzu-mode t)
+  :diminish anzu-mode)
+
+;; learn about emacs
+(use-package discover
+  :ensure t
+  :config (global-discover-mode 1))
+
+;; hide modes from mode line
+(use-package diminish
+  :ensure t
+  :demand t)
+
+(use-package git-link
+  :ensure t
+  :init (setq git-link-open-in-browser t))
+
+(use-package projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode +1))
 ;; --- end Packages
 
 ;; Functions
@@ -86,7 +125,7 @@
   "Insert date at point formatted for worklog."
   (interactive)
   (insert (shell-command-to-string "date +\"%b %d, %Y\"")))
-(global-set-key (kbd "C-c d") 'worklog-date)
+
 ;; --- end Functions
 
 ;; Config
@@ -94,6 +133,8 @@
 (setq require-final-newline t)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(global-eldoc-mode 1)
 
 ;; Treat 'y' or <CR> as yes, 'n' as no.
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -110,6 +151,22 @@
 ;; scroll support for osx
 (global-set-key [mouse-4] 'scroll-down-line)
 (global-set-key [mouse-5] 'scroll-up-line)
+
+;; org mode
+(require 'org)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cv" 'org-todo-list)
+(global-set-key "\C-cl" 'org-store-link)
+(setq org-log-done 'time)
+(define-key org-mode-map (kbd "\C-c \C-q") nil)
+(define-key org-mode-map (kbd "\C-c \C-q") 'counsel-org-tag)
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "IN-PROGRESS(p)" "IN-REVIEW(r@)" "BLOCKED(b@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+
+(use-package org-jira
+  :ensure t
+  :init (setq jiralib-url "https://actblue.atlassian.net")
+  :hook (org-mode . org-jira-mode))
 ;; -- end config
 
 ;; Highlighting, checking, and completion
@@ -147,10 +204,16 @@
                 (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'scala-mode 'enh-ruby-mode)
                   (ggtags-mode 1)))))
 
-(use-package auto-highlight-symbol
+(use-package highlight-symbol
   :ensure t
-  :init (setq ahs-idle-interval 0.5)
-  )
+  :init
+  (setq highlight-symbol-idle-delay 0.5)
+  :bind (("M-p" . highlight-symbol-prev)
+         ("M-n" . highlight-symbol-next))
+  :config
+  (progn
+    (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+    (add-hook 'emacs-lisp-mode 'highlight-symbol-mode)))
 
 ;; show paren style
 (show-paren-mode t)
@@ -183,10 +246,14 @@
 ;;--- end language support
 
 ;; autocompletion
-;; TODO dash at point
+(use-package dash-at-point
+  :ensure t
+  :bind ("C-c d" . dash-at-point))
+
 ;; TODO company mode
 (use-package auto-complete
   :ensure t
+  :disabled t
   :commands auto-complete-mode
   :init
   (progn
@@ -223,7 +290,8 @@
                      ruby-mode
                      enh-ruby-mode
                      lua-mode
-                     ecmascript-mode
+                     ecmascrip
+                     t-mode
                      javascript-mode
                      js-mode
                      js2-mode
@@ -241,6 +309,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(c-basic-offset 4)
+ '(coffee-tab-width 2)
+ '(counsel-find-file-ignore-regexp "\\(?:\\`\\|[/\\]\\)\\(?:[#.]\\)")
+ '(debug-on-error t)
+ '(enh-ruby-deep-indent-construct t)
  '(evil-leader/in-all-states t t)
  '(geben-dbgp-feature-list
    (quote
@@ -252,16 +324,43 @@
    (quote
     ("\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.svn\\(/\\|$\\)" "\\.hg\\(/\\|$\\)" "\\.git\\(/\\|$\\)" "\\.bzr\\(/\\|$\\)" "CVS\\(/\\|$\\)" "_darcs\\(/\\|$\\)" "_MTN\\(/\\|$\\)" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.dfsl$" "\\.pfsl$" "\\.d64fsl$" "\\.p64fsl$" "\\.lx64fsl$" "\\.lx32fsl$" "\\.dx64fsl$" "\\.dx32fsl$" "\\.fx64fsl$" "\\.fx32fsl$" "\\.sx64fsl$" "\\.sx32fsl$" "\\.wx64fsl$" "\\.wx32fsl$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\~$" "\\#$")))
  '(helm-ff-lynx-style-map t)
+ '(js-indent-level 2)
  '(json-mode-indent-level 4)
  '(max-specpdl-size 1400)
+ '(org-agenda-custom-commands
+   (quote
+    (("W" "All agenda items closed during the past week" todo "DONE|CANCELED"
+      ((org-agenda-start-on-weekday 0)
+       (org-agenda-overriding-header "")))
+     ("n" "Agenda and all TODOs"
+      ((agenda "" nil)
+       (alltodo "" nil))
+      nil))))
+ '(org-agenda-files (quote ("~/org/jira/PC.org" "~/org/work.org")))
+ '(org-jira-jira-status-to-org-keyword-alist
+   (quote
+    (("RESOLVED" . "DONE")
+     ("TO-DO" . "TODO")
+     ("In Review" . "IN-REVIEW")
+     ("In Progress" . "IN-PROGRESS"))))
+ '(org-jira-use-status-as-todo nil)
+ '(org-jira-working-dir "~/org/jira")
+ '(org-list-indent-offset 2)
+ '(org-startup-folded (quote showeverything))
+ '(org-startup-truncated t)
  '(package-selected-packages
    (quote
-    (nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck enh-ruby-mode drag-stuff color-theme-sanityinc-tomorrow))))
+    (org-jira yard-mode coffee-mode vscode-icon dired-sidebar unicode-fonts spaceline discover highlight-symbol nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck drag-stuff color-theme-sanityinc-tomorrow)))
+ '(rubocop-autocorrect-command "rubocop -a --format emacs --rails --fail-level C")
+ '(rubocop-autocorrect-on-save t)
+ '(rubocop-check-command "rubocop --format emacs --rails --fail-level C")
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-doc-face ((t (:foreground "brightblack")))))
-(provide '.emacs)
+ '(default ((t (:inherit nil :stipple nil :background "#1b1d1e" :foreground "#dddddd" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "nil" :family "IBM Plex Mono"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "cadet blue" :slant normal)))))
+ (provide '.emacs)
 ;;; .emacs ends here

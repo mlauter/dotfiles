@@ -1,4 +1,4 @@
-;;; ruby.el --- Custom ruby editing configuration
+;; ruby.el --- Custom ruby editing configuration
 ;;
 ;;; Commentary:
 ;; -*-Emacs-Lisp-*-
@@ -10,12 +10,13 @@
   :ensure t
   :demand t
   :commands (rbenv-use-corresponding)
-  :init (add-hook 'enh-ruby-mode-hook 'rbenv-use-corresponding)
   :config (global-rbenv-mode))
 
+;; Installed from local path because there is a newer version from github
 (use-package enh-ruby-mode
-  :ensure t
+  :load-path "~/.emacs.d/Enhanced-Ruby-Mode"
   :defer t
+  :hook (enh-ruby-mode . eldoc-mode)
   :mode (("\\.rb\\'"       . enh-ruby-mode)
          ("\\.ru\\'"       . enh-ruby-mode)
 	 ("\\.jbuilder\\'" . enh-ruby-mode)
@@ -30,26 +31,52 @@
                   enh-ruby-add-encoding-comment-on-save nil
                   enh-ruby-deep-indent-paren nil
                   enh-ruby-bounce-deep-indent t
-                  enh-ruby-hanging-indent-level 2))
+                  enh-ruby-hanging-indent-level 2)
+  :config (add-hook 'enh-ruby-mode-hook 'rbenv-use-corresponding))
 
+;; (use-package ruby-mode
+;;   :ensure t
+;;   :defer t
+;;   :disabled t
+;;   :hook (ruby-mode . eldoc-mode)
+;;   :mode (("\\.rb\\'"       . ruby-mode)
+;;          ("\\.ru\\'"       . ruby-mode)
+;; 	 ("\\.jbuilder\\'" . ruby-mode)
+;;          ("\\.gemspec\\'"  . ruby-mode)
+;;          ("\\.rake\\'"     . ruby-mode)
+;;          ("Rakefile\\'"    . ruby-mode)
+;;          ("Gemfile\\'"     . ruby-mode)
+;;          ("Guardfile\\'"   . ruby-mode)
+;;          ("Capfile\\'"     . ruby-mode)
+;;          ("Vagrantfile\\'" . ruby-mode))
+;;   :config (add-hook 'ruby-mode-hook 'rbenv-use-corresponding))
+
+;; used emacs built in customization for some more settings
+;; check .emacs
 (use-package rubocop
   :ensure t
   :defer t
-  :after rbenv-mode
-  :init (add-hook 'enh-ruby-mode-hook 'rubocop-mode))
+  :hook ((enh-ruby-mode . rubocop-mode)
+         (ruby-mode . rubocop-mode))
+  :config
+  (defvar rubocop-autocorrect-current-file-hook nil
+    "Hook called after rubocop-autocorrect-current-file")
+  (add-hook 'rubocop-autocorrect-current-file-hook
+            (lambda ()
+              (revert-buffer))))
 
 (use-package robe
   :defer t
   :ensure t
-  :init (add-hook 'enh-ruby-mode-hook 'robe-mode)
+  :hook ((enh-ruby-mode . robe-mode)
+         (ruby-mode . robe-mode))
   :config
   (progn
-    (with-eval-after-load 'auto-complete
-      (add-hook 'robe-mode-hook 'ac-robe-setup))))
+    (with-eval-after-load 'company
+      (add-to-list 'company-backends 'company-robe))))
 
 (use-package rspec-mode
   :ensure t
-  :after enh-ruby-mode
   :init
   (progn
     (setq rspec-use-rake-flag nil))
@@ -71,3 +98,15 @@
              "d" 'robe-doc
              "j" 'robe-jump
              "sr" 'robe-rails-refresh))
+
+(use-package projectile-rails
+    :ensure t
+    :after projectile
+    :diminish projectile-rails-mode
+    :hook (projectile-mode . projectile-rails-global-mode))
+
+(use-package yard-mode
+  :ensure t
+  :after (robe-mode)
+  :hook ((enh-ruby-mode . yard-mode)
+         (ruby-mode . yard-mode)))

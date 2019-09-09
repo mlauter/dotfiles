@@ -7,5 +7,7 @@
 	st = status
 	cp = cherry-pick
 	rpull = pull --rebase
+        d = diff
+        ds = diff --cached
 [include]
 	path = ~/.gitconfig_local

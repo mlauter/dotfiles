@@ -50,8 +50,10 @@
             :bindings ("tn" 'linum-mode
                        "a" 'avy-goto-word-or-subword-1
                        "ff" 'my-fzf
+                       "fa" 'ffap
                        "fh" 'fzf-home
-                       "ghl" 'github-link
+                       "ghl" 'git-link
+                       "o" 'browse-url
                        "tf" 'terraform-format-buffer
                        "rb" 'revert-buffer
                        "vf" 'vimish-fold
@@ -60,16 +62,19 @@
                        "gj" 'godef-jump-other-window
                        "tw" 'whitespace-mode
                        "gc" 'goto-last-change
-                       "gr" 'goto-last-change-reverse))
+                       "gr" 'goto-last-change-reverse
+                       "ths" 'highlight-symbol
+                       "hqr" 'highlight-symbol-query-replace
+                       "d" 'worklog-date))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)
     ;; Color the evil tag - colors taken from spaceline
-    (setq evil-normal-state-tag   (propertize " <N> " 'face '((:background "DarkGoldenrod2" :foreground "black")))
-          evil-emacs-state-tag    (propertize " <E> " 'face '((:background "SkyBlue2"       :foreground "black")))
-          evil-insert-state-tag   (propertize " <I> " 'face '((:background "chartreuse3"    :foreground "black")))
-          evil-replace-state-tag  (propertize " <R> " 'face '((:background "chocolate"      :foreground "black")))
-          evil-motion-state-tag   (propertize " <M> " 'face '((:background "plum3"          :foreground "black")))
-          evil-visual-state-tag   (propertize " <V> " 'face '((:background "gray"           :foreground "black")))
-          evil-operator-state-tag (propertize " <O> " 'face '((:background "sandy brown"    :foreground "black")))))
-  (evil-mode 1))
+    ;; (setq evil-normal-state-tag   (propertize " <N> " 'face '((:background "DarkGoldenrod2" :foreground "black")))
+    ;;       evil-emacs-state-tag    (propertize " <E> " 'face '((:background "SkyBlue2"       :foreground "black")))
+    ;;       evil-insert-state-tag   (propertize " <I> " 'face '((:background "chartreuse3"    :foreground "black")))
+    ;;       evil-replace-state-tag  (propertize " <R> " 'face '((:background "chocolate"      :foreground "black")))
+    ;;       evil-motion-state-tag   (propertize " <M> " 'face '((:background "plum3"          :foreground "black")))
+    ;;       evil-visual-state-tag   (propertize " <V> " 'face '((:background "gray"           :foreground "black")))
+    ;;       evil-operator-state-tag (propertize " <O> " 'face '((:background "sandy brown"    :foreground "black")))))
+  (evil-mode 1)))

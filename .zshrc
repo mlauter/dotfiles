@@ -51,7 +51,7 @@ DISABLE_AUTO_UPDATE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions shrink-path Z wd rbenv nodenv)
+plugins=(git zsh-autosuggestions shrink-path Z wd rbenv nodenv bundler)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -90,7 +90,6 @@ export TZ='America/New_York'
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias lb='ls -B'
-alias gdiff='gist -t diff'
 alias gl='git log --graph --pretty="format:%C(yellow)%h%Cblue%d%Creset %s %C(white)"''""'
 alias gderp='git add --all ;and git commit -m "derp" ;and git rebase -i'
 alias g='git'
@@ -166,3 +165,5 @@ export PATH="/usr/local/opt/findutils/bin:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 export BUNDLE_ENTERPRISE__CONTRIBSYS__COM=a13b6d0f:1091db91
+export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/opt/curl/bin:$PATH"

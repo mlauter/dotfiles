@@ -50,3 +50,17 @@ go/
 notes/
 test
 *~
+.authinfo
+.aws/
+.chef/
+.circleci/
+.emacs.d/Enhanced-Ruby-Mode/
+.emacs.d/projectile-bookmarks.eld
+.emacs.d/request/
+.emacs.d/var/
+.fonts/
+.local/
+icons-in-terminal/
+node_modules/
+org/
+package-lock.json
