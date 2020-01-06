@@ -79,7 +79,7 @@
 (use-package rjsx-mode
   :ensure t
   :after js2-mode
-  :mode (("\\.jsx$" . rjsx-mode)
+  :mode (("\\.jsx?$" . rjsx-mode)
          ("components/.+\\.js$" . rjsx-mode))
   :hook (rjsx-mode . (lambda ()
                           (flycheck-mode t)
@@ -113,6 +113,7 @@
 ;; requires ag (the_silver_searcher)
 (use-package xref-js2
   :ensure t
+  :disabled t
   :config
   (add-hook 'js2-mode-hook (lambda ()
                              (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))

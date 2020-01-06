@@ -57,13 +57,18 @@
   :ensure t
   :defer t
   :hook ((enh-ruby-mode . rubocop-mode)
-         (ruby-mode . rubocop-mode))
-  :config
-  (defvar rubocop-autocorrect-current-file-hook nil
-    "Hook called after rubocop-autocorrect-current-file")
-  (add-hook 'rubocop-autocorrect-current-file-hook
-            (lambda ()
-              (revert-buffer))))
+         (ruby-mode . rubocop-mode)))
+  ;; :config
+  ;; (defvar rubocop-autocorrect-current-file-hook nil
+  ;;   "Hook called after rubocop-autocorrect-current-file")
+  ;; (add-hook 'rubocop-autocorrect-current-file-hook
+  ;;           (lambda ()
+  ;;             (revert-buffer))))
+
+(use-package yard-mode
+  :ensure t
+  :hook ((enh-ruby-mode . yard-mode)
+         (ruby-mode . yard-mode)))
 
 (use-package robe
   :defer t
@@ -71,6 +76,8 @@
   :hook ((enh-ruby-mode . robe-mode)
          (ruby-mode . robe-mode))
   :config
+  (unbind-key "M-." robe-mode-map)
+  (unbind-key "M-," robe-mode-map)
   (progn
     (with-eval-after-load 'company
       (add-to-list 'company-backends 'company-robe))))
@@ -104,9 +111,3 @@
     :after projectile
     :diminish projectile-rails-mode
     :hook (projectile-mode . projectile-rails-global-mode))
-
-(use-package yard-mode
-  :ensure t
-  :after (robe-mode)
-  :hook ((enh-ruby-mode . yard-mode)
-         (ruby-mode . yard-mode)))

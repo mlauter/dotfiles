@@ -63,9 +63,16 @@
                        "tw" 'whitespace-mode
                        "gc" 'goto-last-change
                        "gr" 'goto-last-change-reverse
-                       "ths" 'highlight-symbol
+                       "hss" 'highlight-symbol
                        "hqr" 'highlight-symbol-query-replace
-                       "d" 'worklog-date))
+                       "hsd" 'highlight-symbol-remove-all
+                       "d" 'worklog-date
+                       "cr" 'set-rectangular-region-anchor
+                       "cc" 'mc/edit-lines
+                       "ce" 'mc/edit-ends-of-lines
+                       "ca" 'mc/edit-beginnings-of-lines
+                       "rt" 'anzu-replace-at-cursor-thing
+                       "rq" 'anzu-query-replace-at-cursor-thing))
 
   (progn
     (define-key evil-normal-state-map "i" 'evil-emacs-state)

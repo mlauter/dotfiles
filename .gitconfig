@@ -6,7 +6,7 @@
 	co = checkout
 	st = status
 	cp = cherry-pick
-	rpull = pull --rebase
+	rpull = pull --rebase --stat
         d = diff
         ds = diff --cached
 [include]

@@ -13,8 +13,8 @@
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  ;;(add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
   ;; gnu elpa is down :( try a mirror?
   (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/"))))
 ;;; This won't really do anything until Emacs 25.1+
@@ -67,6 +67,34 @@
 ;; --- end setup ---
 
 ;; Packages
+(defun my-rust-mode-custom-before-save-hook ()
+  "Custom rust-mode before save hook."
+  (when (eq major-mode 'rust-mode)
+    (rust-format-buffer)))
+
+(use-package rust-mode
+  :ensure t
+  :config (add-hook 'before-save-hook #'my-rust-mode-custom-before-save-hook))
+
+(use-package flycheck-rust
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package racer
+  :ensure t
+  :demand t
+  :hook (rust-mode . racer-mode)
+  :config
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
+
 (use-package all-the-icons
   :ensure t)
 
@@ -88,7 +116,9 @@
   :defer t
   :init (setq anzu-cons-mode-line-p nil)
   :bind (("M-%" . anzu-query-replace)
-         ("C-M-%" . anzu-query-replace-regexp))
+         ("C-M-%" . anzu-query-replace-regexp)
+         ("C-c M-%" . anzu-replace-at-cursor-thing)
+         ("C-c C-M-%" . anzu-query-replace-at-cursor-thing))
   :config (global-anzu-mode t)
   :diminish anzu-mode)
 
@@ -112,6 +142,14 @@
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
+
+;; meh i give up
+;; (use-package realgud
+;;   :ensure t
+;;   :config
+;;   (load-library "realgud")
+;;   (use-package realgud-pry
+;;     :ensure t))
 ;; --- end Packages
 
 ;; Functions
@@ -125,6 +163,26 @@
   "Insert date at point formatted for worklog."
   (interactive)
   (insert (shell-command-to-string "date +\"%b %d, %Y\"")))
+
+(defun align-single-equals (beg end)
+  "Align lines from BEG to END at an equals sign."
+  (interactive "r")
+  (align-regexp beg end
+                "\\(\\s-*\\) = " 1 0 nil))
+(global-set-key (kbd "C-c =") 'align-single-equals)
+
+;; todo
+(defun mgl/toggle-multiline-funccall ()
+  "Toggle expanding a function call to put arguments on multiple lines."
+  (interactive)
+  ;; use a property “state”. Value is t or nil
+  (if (get 'mgl/toggle-multiline-funccall 'state)
+      (progn
+        ;; todo
+        (put 'mgl/toggle-multiline-funccall 'state nil))
+    (progn
+      ;; todo
+      (put 'mgl/toggle-multiline-funccall 'state t))))
 
 ;; --- end Functions
 
@@ -194,8 +252,10 @@
     (setq smartparens-strict-mode nil)
     (sp-local-pair 'php-mode "/**" "*/")))
 
+;; not using this
 (use-package ggtags
   :ensure t
+  :disabled t
   :defer t
   :commands ggtags-mode
   :config
@@ -213,7 +273,9 @@
   :config
   (progn
     (add-hook 'prog-mode-hook 'highlight-symbol-mode)
-    (add-hook 'emacs-lisp-mode 'highlight-symbol-mode)))
+    (add-hook 'text-mode-hook 'highlight-symbol-mode)
+    (add-hook 'prog-mode-hook 'highlight-symbol-nav-mode)
+    (add-hook 'text-mode-hook 'highlight-symbol-nav-mode)))
 
 ;; show paren style
 (show-paren-mode t)
@@ -237,7 +299,79 @@
 (use-package terraform-mode
   :ensure t
   :defer t
-  :hook terraform-format-on-save-mode)
+  :config
+  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+
+(use-package dockerfile-mode
+  :ensure t
+  :mode ("Dockerfile" . dockerfile-mode))
+
+;; doesn't play nice with rjsx unfortunately
+;; (use-package mmm-mode
+;;   :ensure t
+;;   :disabled t
+;;   :after rjsx-mode
+;;   :init (setq
+;;          mmm-global-mode
+;;          'buffers-with-submode-classes
+;;          mmm-submode-decoration-level 2)
+;;   :config
+;;   (require 'mmm-auto)
+
+;;   (mmm-add-classes
+;;    '((js-graphql
+;;       :submode graphql-mode
+;;       :face mmm-declaration-submode-face
+;;       :front "[^a-zA-Z]gql`" ;; regex to find the opening tag
+;;       :back "`"))) ;; regex to find the closing tag
+
+;;   (mmm-add-mode-ext-class 'js2-mode nil 'js-graphql)
+;;   (mmm-add-mode-ext-class 'rjsx-mode nil 'js-graphql)
+;;   (setq mmm-global-mode 'maybe))
+
+(use-package polymode
+  :after rjsx-mode
+  :ensure t
+  :config
+  (define-hostmode poly-rjsx-hostmode nil
+    "RJSX hostmode."
+    :mode 'rjsx-mode)
+  (define-innermode poly-rjsx-graphql-innermode nil
+    :mode 'graphql-mode
+    :head-matcher "[^a-zA-Z]gql`"
+    :tail-matcher "\`"
+    :head-mode 'host
+    :tail-mode 'host)
+  (define-polymode poly-rjsx-mode
+    :hostmode 'poly-rjsx-hostmode
+    :innermodes '(poly-rjsx-graphql-innermode))
+  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . poly-rjsx-mode)))
+
+(use-package graphql-mode
+  :ensure t
+  )
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-<"     . mc/mark-previous-like-this)
+         ("C->"     . mc/mark-next-like-this)
+         ("C-+"     . mc/mark-next-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)))
+
+(use-package dumb-jump
+  :ensure t
+  :hook (prog-mode-hook . dumb-jump-mode)
+  :bind* (:map dumb-jump-mode-map
+         ("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-." . dumb-jump-go)
+         ("M-g b" . dumb-jump-back)
+         ("M-," . dumb-jump-back)
+         ("M-g i" . dumb-jump-go-prompt)
+         ("M-g l" . dumb-jump-quick-look)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'ivy))
 
 ;; tab display width in various modes
 (add-hook 'conf-toml-mode-hook
@@ -312,7 +446,12 @@
  '(coffee-tab-width 2)
  '(counsel-find-file-ignore-regexp "\\(?:\\`\\|[/\\]\\)\\(?:[#.]\\)")
  '(debug-on-error t)
- '(enh-ruby-deep-indent-construct t)
+ '(dumb-jump-force-searcher (quote ag))
+ '(dumb-jump-git-grep-search-untracked t)
+ '(dumb-jump-mode t)
+ '(dumb-jump-selector (quote ivy))
+ '(enh-ruby-bounce-deep-indent nil)
+ '(enh-ruby-deep-indent-construct nil)
  '(evil-leader/in-all-states t t)
  '(geben-dbgp-feature-list
    (quote
@@ -326,6 +465,7 @@
  '(helm-ff-lynx-style-map t)
  '(js-indent-level 2)
  '(json-mode-indent-level 4)
+ '(json-reformat:indent-width 2)
  '(max-specpdl-size 1400)
  '(org-agenda-custom-commands
    (quote
@@ -336,7 +476,9 @@
       ((agenda "" nil)
        (alltodo "" nil))
       nil))))
- '(org-agenda-files (quote ("~/org/jira/PC.org" "~/org/work.org")))
+ '(org-agenda-files
+   (quote
+    ("~/org/personal.org" "~/org/jira/PC.org" "~/org/work.org")))
  '(org-jira-jira-status-to-org-keyword-alist
    (quote
     (("RESOLVED" . "DONE")
@@ -350,11 +492,12 @@
  '(org-startup-truncated t)
  '(package-selected-packages
    (quote
-    (org-jira yard-mode coffee-mode vscode-icon dired-sidebar unicode-fonts spaceline discover highlight-symbol nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck drag-stuff color-theme-sanityinc-tomorrow)))
+    (rust-mode terraform-mode polymode multiple-cursors graphql-mode mmm-auto mmm-mode pry-doc dumb-jump dockerfile-mode org-jira yard-mode coffee-mode vscode-icon dired-sidebar unicode-fonts spaceline discover highlight-symbol nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck drag-stuff color-theme-sanityinc-tomorrow)))
  '(rubocop-autocorrect-command "rubocop -a --format emacs --rails --fail-level C")
  '(rubocop-autocorrect-on-save t)
  '(rubocop-check-command "rubocop --format emacs --rails --fail-level C")
- '(show-paren-mode t))
+ '(show-paren-mode t)
+ '(web-mode-markup-indent-offset 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
