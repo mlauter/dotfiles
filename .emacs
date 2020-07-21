@@ -13,8 +13,8 @@
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  ;;(add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
   ;; gnu elpa is down :( try a mirror?
   (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/"))))
 ;;; This won't really do anything until Emacs 25.1+
@@ -72,6 +72,9 @@
   (when (eq major-mode 'rust-mode)
     (rust-format-buffer)))
 
+(use-package groovy-mode
+  :ensure t)
+
 (use-package rust-mode
   :ensure t
   :config (add-hook 'before-save-hook #'my-rust-mode-custom-before-save-hook))
@@ -94,6 +97,27 @@
   (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
   (add-hook 'racer-mode-hook #'eldoc-mode)
   (add-hook 'racer-mode-hook #'company-mode))
+
+;; from the Tide README
+(defun setup-tide-mode ()
+  "Set up Tide mode."
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1)
+  (add-to-list 'company-backends 'company-tide))
+
+(use-package tide
+  :ensure t
+  :config
+  (setq company-tooltip-align-annotations t)
+  (add-hook 'before-save-hook 'tide-format-before-save)
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+  (add-hook 'typescript-mode-hook #'add-node-modules-path)
+  :bind (("C-c ." . tide-jump-to-definition)
+         ("C-c ," . tide-jump-back)))
 
 (use-package all-the-icons
   :ensure t)
@@ -152,6 +176,9 @@
 ;;     :ensure t))
 ;; --- end Packages
 
+;; auto revert mode
+(global-auto-revert-mode 1)
+
 ;; Functions
 (defun backward-kill-line (arg)
   "Kill ARG lines backward."
@@ -183,6 +210,19 @@
     (progn
       ;; todo
       (put 'mgl/toggle-multiline-funccall 'state t))))
+
+(defun mgl/vc-relative-path ()
+  "Return the current file path relative to the vc root (if set)."
+  (if (eq (vc-root-dir) nil)
+      (buffer-file-name)
+    (file-relative-name (buffer-file-name) (vc-root-dir))))
+
+(defun copy-relative-path ()
+  "Copy the current vc-relative file path to the clipboard."
+  (interactive)
+  (kill-new (mgl/vc-relative-path)))
+
+(global-set-key (kbd "C-c k r") 'copy-relative-path)
 
 ;; --- end Functions
 
@@ -453,6 +493,7 @@
  '(enh-ruby-bounce-deep-indent nil)
  '(enh-ruby-deep-indent-construct nil)
  '(evil-leader/in-all-states t t)
+ '(flycheck-check-syntax-automatically (quote (save idle-change new-line mode-enabled)))
  '(geben-dbgp-feature-list
    (quote
     ((:set max_data 32768)
@@ -492,11 +533,15 @@
  '(org-startup-truncated t)
  '(package-selected-packages
    (quote
-    (rust-mode terraform-mode polymode multiple-cursors graphql-mode mmm-auto mmm-mode pry-doc dumb-jump dockerfile-mode org-jira yard-mode coffee-mode vscode-icon dired-sidebar unicode-fonts spaceline discover highlight-symbol nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck drag-stuff color-theme-sanityinc-tomorrow)))
- '(rubocop-autocorrect-command "rubocop -a --format emacs --rails --fail-level C")
+    (ttl-mode tide groovy-mode rust-mode terraform-mode polymode multiple-cursors graphql-mode mmm-auto mmm-mode pry-doc dumb-jump dockerfile-mode org-jira yard-mode coffee-mode vscode-icon dired-sidebar unicode-fonts spaceline discover highlight-symbol nodenv auto-highlight-symbol lua-mode javascript-eslint js2-mode yaml-mode go-mode origami badger-theme web-mode use-package smartparens rubocop php-mode molokai-theme markdown-mode magit ido-completing-read+ helm-descbinds ggtags fzf flycheck drag-stuff color-theme-sanityinc-tomorrow)))
+ '(rubocop-autocorrect-command
+   "rubocop -a --format emacs --require rubocop-rails --fail-level C")
  '(rubocop-autocorrect-on-save t)
- '(rubocop-check-command "rubocop --format emacs --rails --fail-level C")
+ '(rubocop-check-command
+   "rubocop --format emacs --require rubocop-rails --fail-level C")
  '(show-paren-mode t)
+ '(tide-always-show-documentation t)
+ '(typescript-indent-level 2)
  '(web-mode-markup-indent-offset 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

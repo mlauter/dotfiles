@@ -67,12 +67,13 @@
   :hook ((js2-mode . add-node-modules-path)
          (rsjx-mode . add-node-modules-path)))
 
+;; https://github.com/jscheid/prettier.el seems better
 ;; prettier-emacs: minor-mode to prettify javascript files on save
 ;; https://github.com/prettier/prettier-emacs
-(use-package prettier-js
-  :ensure t
-  :hook ((js2-mode . prettier-js-mode)
-         (rjsx-mode . prettier-js-mode)))
+;; (use-package prettier-js
+;;   :ensure t
+;;   :hook ((js2-mode . prettier-js-mode)
+;;          (rjsx-mode . prettier-js-mode)))
 
 ;; rjsx-mode: A JSX major mode for Emacs
 ;; https://github.com/felipeochoa/rjsx-mode
@@ -83,7 +84,9 @@
          ("components/.+\\.js$" . rjsx-mode))
   :hook (rjsx-mode . (lambda ()
                           (flycheck-mode t)
-                          (company-mode t)))
+                          (company-mode t)
+                          (setup-tide-mode)
+                          (show-smartparens-mode 0)))
   :init
   (defun +javascript-jsx-file-p ()
     "Detect React or preact imports early in the file."

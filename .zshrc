@@ -147,7 +147,7 @@ export GTAGSLABEL=pygments
 source ~/.iterm2_shell_integration.zsh
 export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
 
-export JAVA_HOME="usr/local/opt/java/jre1.8.0_191.jre/Contents/Home"
+export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH="/usr/local/opt/php@7.1/bin:$PATH"
 export PATH="/usr/local/opt/gawk/bin:$PATH"
 export PATH="/usr/local/opt/gnu-sed/bin:$PATH"
@@ -164,8 +164,13 @@ export PATH="/usr/local/opt/curl/bin:$PATH"
 
 export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
+export CLOUDSDK_PYTHON=python3
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/usr/local/opt/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/opt/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/usr/local/opt/google-cloud-sdk/completion.zsh.inc' ]; then . '/usr/local/opt/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Once we move to newer ruby full time
+# export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
